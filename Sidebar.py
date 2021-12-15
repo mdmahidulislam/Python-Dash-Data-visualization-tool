@@ -1,8 +1,31 @@
+from sqlite3.dbapi2 import Cursor
 import dash
+from dash.html.Label import Label
+import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output, State
+import plotly.graph_objs as go
+import plotly.express as px
+import sqlite3
+
+
+# DB connection---------------------------------------------------------------------------
+
+conn = sqlite3.connect(
+    'C:\Islam\AHS Productivity Team\Python-Dash-Data-visualization-tool\ProductionAnalisys.db')
+cursor = conn.cursor()
+cursor.execute("SELECT * FROM TrendData GROUP BY ShiftDate, Category, SubCategory1, SubCategory2, SubCategory3, SubCategory4 HAVING UpdateDate=MAX(UpdateDate)")
+
+# ---------------------------------------------------------------------------
+# Retrieve data from database-------------------
+
+fig = go.Figure(
+    data=[go.Scatter(x=["ShiftDate"], y=["Category"])])
+trendplot = dcc.Graph(figure=fig)
+# Retrieve data from database-------------------
+
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -18,9 +41,9 @@ navbar = dbc.NavbarSimple(
         #         dbc.DropdownMenuItem("Page 2", href="#"),
         #         dbc.DropdownMenuItem("Page 3", href="#"),
         #     ],
-        #nav=True,
-       # in_navbar=True,
-       # label="More",
+        # nav=True,
+        # in_navbar=True,
+        # label="More",
         # ),
     ],
 
@@ -88,6 +111,7 @@ CARD_STYLE = {
 KPI = dbc.Card(
     dbc.CardBody(
         [
+
             html.P("This is tab 1!", className="card-text"),
             # dbc.Button("Click here", color="success"),
         ]
@@ -128,11 +152,16 @@ content = html.Div(
 
 kpicard = dbc.Card(
     dbc.Tabs(
-        [
-            dbc.Tab(KPI, label="KPI"),
-            dbc.Tab(WARNING, label="Warning Detection Stop")
 
-        ]
+        [
+
+            dbc.Tab(trendplot, label="KPI"),
+            dbc.Tab(WARNING, label="Warning Detection Stop"),
+
+
+
+        ],
+
 
     ),
     style=CARD_STYLE
@@ -150,6 +179,7 @@ detailcard = dbc.Card(
     style=CARD_STYLE
 )
 
+
 app.layout = html.Div(
     [
         dcc.Store(id='side_click'),
@@ -161,6 +191,8 @@ app.layout = html.Div(
         detailcard
     ],
 )
+
+# Toggling sidebar------------------------------------------------------------------
 
 
 @app.callback(
@@ -191,6 +223,7 @@ def toggle_sidebar(n, nclick):
         cur_nclick = 'SHOW'
 
         return sidebar_style, content_style, cur_nclick
+# Toggling sidebar------------------------------------------------------------------
 
 # this callback uses the current pathname to set the active state of the
 # corresponding nav link to true, allowing users to tell see page they are on
