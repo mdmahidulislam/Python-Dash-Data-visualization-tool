@@ -1,24 +1,17 @@
-from sqlite3.dbapi2 import Cursor
+
 import dash
 from dash.html.Label import Label
-import dash_core_components as dcc
+from dash import dcc
 import dash_bootstrap_components as dbc
 from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output, State
 import plotly.graph_objs as go
 import plotly.express as px
-import sqlite3
 
 
-# DB connection---------------------------------------------------------------------------
 
-conn = sqlite3.connect(
-    'C:\Islam\AHS Productivity Team\Python-Dash-Data-visualization-tool\ProductionAnalisys.db')
-cursor = conn.cursor()
-cursor.execute("SELECT * FROM TrendData GROUP BY ShiftDate, Category, SubCategory1, SubCategory2, SubCategory3, SubCategory4 HAVING UpdateDate=MAX(UpdateDate)")
 
-# ---------------------------------------------------------------------------
 # Retrieve data from database-------------------
 
 fig = go.Figure(
